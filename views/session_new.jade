@@ -1,0 +1,25 @@
+extends layout
+block append content
+    form.form-horizontal(method='post')
+        fieldset
+            // Form Name
+            h1.text-center #{title}
+            // Text input
+            .form-group
+              label.col-md-4.control-label(for='host') Host name input
+              |   
+              |   
+              .col-md-4
+                input#host.form-control.input-md(name='host', type='text', placeholder='Enter name here',required='')
+            // Textarea
+            .form-group
+              label.col-md-4.control-label(for='description') Description
+              |   
+              .col-md-4
+                textarea#description.form-control(name='description') 
+            // Button (Double)
+            .form-group
+              label.col-md-4.control-label(for='send')
+              |   
+              .col-md-8
+                button#send.hvr-icon-fade.submit-button(name='send') Submit

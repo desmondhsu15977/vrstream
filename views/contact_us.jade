@@ -1,0 +1,17 @@
+extends layout
+block append content
+    h1= title
+    a(href='/') Go back
+    form( method="post")
+        div
+            div
+                span Name :
+                input(type="text", name="name", id="name")
+            div
+                span Email :
+                input(type="text", name="email", id="email")
+            div
+                span Comment:
+                textarea(type="text", name="comment", rows=5, id="comment")
+            div#ContactUsSubmit
+                input(type="submit", value="Send")

@@ -1,0 +1,19 @@
+extends layout
+block append content
+		#sessions
+			h1.text-center #{title}
+			hr
+			.container
+				.row
+					- each session in sessions
+						.col-md-4
+							.thumbnail
+								a(href="/sessions/"+session.host)
+									img(src='/mock_img/thumbnail.jpg')
+								div.session
+									div.title
+										a(href="/sessions/"+session.host) #{session.host}
+									a(href="/sessions/delete/"+session._id) Delete
+									div
+									a(href="/host/"+session.host) I am #{session.host}
+								div.body= session.description

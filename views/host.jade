@@ -1,0 +1,83 @@
+extends layout
+block append head
+	title Hosting as #{hostname}
+	script(type='text/javascript', src='../js/binary.js')
+	script(type='text/javascript', src='../js/modernizr.min.js')
+	script.
+		document.addEventListener("DOMContentLoaded", function(event) {
+		window.addEventListener("dragover",function(e){ e = e || event; e.preventDefault(); },false); window.addEventListener("drop",function(e){ e = e || event; e.preventDefault(); },false);
+		var settings = {
+		grabRate: 20,
+		canvasWidth: 1280,
+		canvasHeight: 640,
+		socketSrv: 'ws://'+window.location.hostname+':8081'};
+		
+		var file;
+		
+		var videoEl = document.getElementById('video');
+		var senderEl = document.getElementById('sender');
+		
+		var senderContext = senderEl.getContext('2d');
+		
+		var stream;
+		var client = new BinaryClient(settings.socketSrv);
+		
+		senderEl.width = settings.canvasWidth;
+		senderEl.height = settings.canvasHeight;
+		
+		client.on('open', function () {
+		stream = client.createStream({hostname: "#{hostname}", type: 'write'});
+		});
+		
+		
+		var box = $('#box');
+		box.on('dragover', function(e){
+		e.target.style.opacity =.5;
+		});
+		//box.on('dragenter', doNothing);
+		box.text('Drag files here');
+		box.on('drop', function(e){
+		
+		
+		var file = e.originalEvent.dataTransfer.files[0];
+		// Add to list of uploaded files
+		
+		$('<div align="center"></div>').append($('<a></a>').text(file.name).prop('href', '/'+file.name)).appendTo('body');
+		
+		// `client.send` is a helper function that creates a stream with the 
+		// given metadata, and then chunks up and streams the data.
+		//var stream = client.send(file, {name: file.name, size: file.size});
+		
+		// Print progress
+		//var tx = 0;
+		
+		videoEl.src = window.URL.createObjectURL(file);
+		videoEl.play();
+		
+		setTimeout(grabLoop, settings.grabRate);
+		
+		});
+		
+		var grabLoop = function () {
+		try {
+		senderContext.drawImage(videoEl, 0, 0, settings.canvasWidth, settings.canvasHeight);
+		} catch (e) {}
+		
+		var imageData = senderContext.getImageData(0, 0, settings.canvasWidth, settings.canvasHeight);
+		if (typeof stream !== 'undefined') {
+		stream.write(imageData.data);
+		}
+		setTimeout(grabLoop, settings.grabRate);
+		};
+		});
+block append content
+	video#video(style='display:none;')
+	canvas#sender
+	#progress(align='center') 0% complete
+	#box(style='background: #eee; font-size: 26px; width: 400px; height: 300px;line-height: 300px; margin: 0 auto; text-align: center;') Connecting...
+
+
+	
+
+
+	
